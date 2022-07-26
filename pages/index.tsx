@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { useEffect, useState } from "react";
 import { Layout } from "../components/layout/Layout";
 import { MeetupItemProps } from "../components/meetups/meetup-item-props.model";
 import { MeetupItemList } from "../components/meetups/MeetupList";
@@ -20,8 +21,16 @@ const DUMMY_MEETUPS = [
   },
 ] as MeetupItemProps[];
 
-const Home: NextPage = () => {
-  return <MeetupItemList meetups={DUMMY_MEETUPS} />;
+const Home: NextPage = (props: any) => {
+  return <MeetupItemList meetups={props.meetups} />;
 };
+
+export async function getStaticProps() {
+  return {
+    props: {
+      meetups: DUMMY_MEETUPS,
+    },
+  };
+}
 
 export default Home;
