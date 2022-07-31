@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import { Meetup } from "../../components/meetups/meetup.model";
 import { NewMeetupForm } from "../../components/meetups/NewMeetupForm";
@@ -21,7 +22,15 @@ const NewMeetup: NextPage = () => {
     router.replace("/");
   };
 
-  return <NewMeetupForm onAddMeetup={addMeetupHandler} />;
+  return (
+    <>
+      <Head>
+        <title>Add a New Meetup</title>
+        <meta name="description" content="Add your own meetups" />
+      </Head>
+      <NewMeetupForm onAddMeetup={addMeetupHandler} />
+    </>
+  );
 };
 
 export default NewMeetup;

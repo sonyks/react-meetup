@@ -8,12 +8,17 @@ import type {
 } from "next";
 import { MeetupDetail } from "../../components/meetups/MeetupDetail";
 import { mongoDbUrl } from "../../components/models/constants.model";
+import Head from "next/head";
 
 const MeetupDetails: NextPage = ({
   meetupData,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
     <>
+      <Head>
+        <title>{meetupData.title}</title>
+        <meta name="description" content={meetupData.description} />
+      </Head>
       <MeetupDetail
         image={meetupData.image}
         title={meetupData.title}

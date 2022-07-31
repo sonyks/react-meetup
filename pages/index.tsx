@@ -1,5 +1,6 @@
 import { MongoClient } from "mongodb";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
+import Head from "next/head";
 import { MeetupItemProps } from "../components/meetups/meetup-item-props.model";
 import { MeetupItemList } from "../components/meetups/MeetupList";
 import { mongoDbUrl } from "../components/models/constants.model";
@@ -7,7 +8,18 @@ import { mongoDbUrl } from "../components/models/constants.model";
 const Home: NextPage = ({
   meetups,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  return <MeetupItemList meetups={meetups} />;
+  return (
+    <>
+      <Head>
+        <title>React Meetups</title>
+        <meta
+          name="description"
+          content="Browse a huge list of highly active React meetups"
+        />
+      </Head>
+      <MeetupItemList meetups={meetups} />
+    </>
+  );
 };
 
 export const getStaticProps: GetStaticProps = async () => {
