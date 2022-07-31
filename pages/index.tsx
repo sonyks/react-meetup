@@ -1,25 +1,8 @@
+import { MongoClient } from "mongodb";
 import type { GetStaticProps, InferGetStaticPropsType, NextPage } from "next";
-import { useEffect, useState } from "react";
-import { Layout } from "../components/layout/Layout";
 import { MeetupItemProps } from "../components/meetups/meetup-item-props.model";
 import { MeetupItemList } from "../components/meetups/MeetupList";
-
-const DUMMY_MEETUPS = [
-  {
-    id: "m1",
-    title: "A First Meetup",
-    image: "https://i.imgur.com/A040Lxr.png",
-    address: "Test address 5, some city",
-    description: "This is the first meetup",
-  },
-  {
-    id: "m2",
-    title: "A Second Meetup",
-    image: "https://i.imgur.com/FOeYt4E.png",
-    address: "Test second address 5, some city",
-    description: "This is the second meetup",
-  },
-] as MeetupItemProps[];
+import { mongoDbUrl } from "../components/models/constants.model";
 
 const Home: NextPage = ({
   meetups,
@@ -28,9 +11,26 @@ const Home: NextPage = ({
 };
 
 export const getStaticProps: GetStaticProps = async () => {
+  const client = await MongoClient.connect(mongoDbUrl);
+  const db = client.db();
+
+  const meetupCollections = db.collection("meetups");
+  const meetups = await meetupCollections.find().toArray();
+
+  client.close();
+
   return {
     props: {
-      meetups: DUMMY_MEETUPS,
+      meetups: meetups.map(
+        (meetup) =>
+          ({
+            title: meetup.title,
+            address: meetup.address,
+            description: meetup.description,
+            image: meetup.image,
+            id: meetup._id.toString(),
+          } as MeetupItemProps)
+      ),
     },
   };
 };

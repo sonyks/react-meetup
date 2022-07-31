@@ -1,8 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { Meetup } from "../../components/meetups/meetup.model";
 import { MongoClient } from "mongodb";
-
-const mongoDbUrl = process.env.MONGODB_DATABASE_URL as string;
+import { mongoDbUrl } from "../../components/models/constants.model";
 
 export default async function handler(
   req: NextApiRequest,
@@ -11,8 +10,6 @@ export default async function handler(
   if (req.method === "POST") {
     const data = req.body;
     var bodyJson = JSON.parse(req.body);
-
-    console.log(mongoDbUrl);
 
     const client = await MongoClient.connect(mongoDbUrl);
     const db = client.db();

@@ -1,3 +1,5 @@
+import { MongoClient } from "mongodb";
+import { ObjectId } from "bson";
 import type {
   GetStaticPaths,
   GetStaticProps,
@@ -5,6 +7,7 @@ import type {
   NextPage,
 } from "next";
 import { MeetupDetail } from "../../components/meetups/MeetupDetail";
+import { mongoDbUrl } from "../../components/models/constants.model";
 
 const MeetupDetails: NextPage = ({
   meetupData,
@@ -22,33 +25,44 @@ const MeetupDetails: NextPage = ({
 };
 
 export const getStaticPaths: GetStaticPaths = async () => {
+  const client = await MongoClient.connect(mongoDbUrl);
+  const db = client.db();
+
+  const meetupCollections = db.collection("meetups");
+  const meetups = await meetupCollections
+    .find({}, { projection: { _id: 1 } })
+    .toArray();
+
+  client.close();
+
   return {
-    paths: [
-      {
-        params: {
-          meetupId: "m1",
-        },
+    paths: meetups.map((meetup) => ({
+      params: {
+        meetupId: meetup._id.toString(),
       },
-      {
-        params: {
-          meetupId: "m2",
-        },
-      },
-    ],
+    })),
     fallback: false,
   };
 };
 
 export const getStaticProps: GetStaticProps = async (context) => {
-  const meetupId = context.params?.meetupId;
-  console.log(meetupId);
+  const client = await MongoClient.connect(mongoDbUrl);
+  const db = client.db();
+
+  const meetupCollections = db.collection("meetups");
+
+  const meetupId: string = context.params?.meetupId as string;
+  const id = new ObjectId(meetupId);
+  const selectedMeetup = await meetupCollections.findOne({ _id: id });
+
   return {
     props: {
       meetupData: {
-        image: "https://i.imgur.com/A040Lxr.png",
-        title: "A First Meetup",
-        address: "Some street",
-        description: "The meetup description",
+        id: selectedMeetup?._id.toString(),
+        image: selectedMeetup?.image,
+        title: selectedMeetup?.title,
+        address: selectedMeetup?.address,
+        description: selectedMeetup?.description,
       },
     },
   };
